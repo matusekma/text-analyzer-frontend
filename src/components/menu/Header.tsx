@@ -16,12 +16,13 @@ import {
 } from "@chakra-ui/react";
 import { FiMenu, FiChevronDown } from "react-icons/fi";
 import { BiUser } from "react-icons/bi";
-import { ColorModeSwitcher } from "../../ColorModeSwitcher";
+import { ColorModeSwitcher } from "../ColorModeSwitcher";
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+
+const Header = ({ onOpen, ...rest }: MobileProps) => {
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -90,4 +91,4 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   );
 };
 
-export default MobileNav;
+export default Header;
