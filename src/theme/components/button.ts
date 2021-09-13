@@ -1,10 +1,7 @@
-import { extendTheme } from "@chakra-ui/react"
+const Button = {
+    baseStyle: {
 
-const theme = extendTheme({
-    components: {
-        Button: {
-
-        }
     },
-})
-export default theme
+}
+
+export default Button

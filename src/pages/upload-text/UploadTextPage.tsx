@@ -37,18 +37,28 @@ const UploadTextPage = () => {
         boxShadow={"lg"}
         p={8}
       >
-        <Center mb={6}>
+        <Center mb={8}>
           <Heading as="h1" size="xl">
             Upload text
           </Heading>
         </Center>
-        <Stack spacing={4}>
+        <Stack
+          as={"form"}
+          spacing={2}
+          direction="column"
+          align="start"
+          mb={4}
+          onSubmit={(e) => {
+            e.preventDefault();
+            // remove this code and implement your submit logic right here
+          }}
+        >
           <Stack direction={{ base: "column", sm: "row" }}>
-            <FormControl id="name" maxW="300px">
+            <FormControl id="name" name="name" maxW="300px">
               <FormLabel>Name</FormLabel>
               <Input type="text" />
             </FormControl>
-            <FormControl id="description" maxW="300px">
+            <FormControl id="description" name="description" maxW="300px">
               <FormLabel>Short description</FormLabel>
               <Input type="text" />
             </FormControl>
@@ -62,16 +72,16 @@ const UploadTextPage = () => {
               <Radio value="FILE">File</Radio>
             </Stack>
           </RadioGroup>
-          <Stack direction={{ base: "column", sm: "row" }}>
+          <Stack w="100%" direction={{ base: "column", sm: "row" }}>
             {uploadMode === TextUploadMode.FILE ? (
-              <FormControl id="textFile">
+              <FormControl id="textFile" name="textFile">
                 <FormLabel>Upload</FormLabel>
                 <Flex minH="80px" alignItems="center">
                   <Input border="none" pl={1} type="file" />
                 </Flex>
               </FormControl>
             ) : (
-              <FormControl id="text">
+              <FormControl id="text" name="text" >
                 <FormLabel>Text</FormLabel>
                 <Textarea
                   value={text}
@@ -80,7 +90,6 @@ const UploadTextPage = () => {
                     setText(inputValue);
                   }}
                   placeholder="Paste your text here!"
-                  size="sm"
                 />
               </FormControl>
             )}
@@ -96,7 +105,9 @@ const UploadTextPage = () => {
             </FormControl>
           </Stack>
           <Stack direction={{ base: "column", sm: "row" }}>
-            <Button colorScheme="teal">Submit</Button>
+            <Button type="submit" colorScheme="teal">
+              Submit
+            </Button>
             <Button colorScheme="teal">Submit & Analyze</Button>
           </Stack>
         </Stack>

@@ -5,6 +5,7 @@ import PrivateRoute from "./routing/PrivateRoute";
 import UploadTextPage from "./pages/upload-text/UploadTextPage";
 import NotFoundPage from "./pages/generic/NotFoundPage";
 import theme from "./theme";
+import UploadAudioPage from "./pages/upload-audio/UploadAudioPage";
 
 export const App = () => (
   <ChakraProvider theme={theme}>
@@ -18,7 +19,9 @@ export const App = () => (
         <PrivateRoute path="/upload-text">
           <UploadTextPage />
         </PrivateRoute>
-        <PrivateRoute path="/upload-audio">upload audio page</PrivateRoute>
+        <PrivateRoute path="/upload-audio">
+          <UploadAudioPage />
+        </PrivateRoute>
         <PrivateRoute path="/my-uploads">my uploads page</PrivateRoute>
         <PrivateRoute path="/analysis-history">
           analysis history page

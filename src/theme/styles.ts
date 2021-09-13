@@ -1,18 +1,18 @@
-import { extendTheme } from "@chakra-ui/react"
+const styles = {
+    global: {
+        // styles for the `body`
+        body: {
 
-const theme = extendTheme({
-    styles: {
-        global: {
-            // styles for the `body`
-            body: {
-                
-            },
-            // styles for the `a`
-            a: {
-                
-            },
         },
-    },
-})
+        // styles for the `a`
+        a: {
 
-export default theme;
+        },
+        'input[type="file"]': {
+            marginTop: "5px"
+        }
+    },
+}
+
+
+export default styles;
