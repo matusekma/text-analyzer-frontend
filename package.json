@@ -16,6 +16,8 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-select": "^4.0.17",
+    "axios": "^0.21.4",
+    "focus-visible": "^5.2.0",
     "framer-motion": "^4.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -30,7 +32,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "openapi-generate": "npx @openapitools/openapi-generator-cli generate -i ./reference/text-analyzer-api.yml -g typescript-axios -o ./src/client/"
   },
   "eslintConfig": {
     "extends": "react-app"

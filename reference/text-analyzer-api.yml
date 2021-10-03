@@ -1,0 +1,426 @@
+openapi: 3.0.1
+info:
+  title: Text Analyzer
+  description: ''
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: auth
+    description: Operations about authentication and authorization
+  - name: pipelines
+    description: Operations about pipelines
+  - name: uploads
+    description: Operations about uploads
+paths:
+  /me:
+    get:
+      tags:
+        - auth
+      summary: Get current user
+      operationId: getCurrentUser
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+  /login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      operationId: login
+      requestBody:
+        description: Login credentials 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /logout:
+    post:
+      tags:
+        - auth
+      summary: Logout
+      operationId: logout
+      responses:
+        200:
+          description: OK
+  /register:
+    post:
+      tags:
+        - auth
+      summary: Register
+      operationId: register
+      requestBody:
+        description: Registration data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /uploads:
+    post:
+      tags:
+        - uploads
+      summary: Upload text
+      operationId: uploadText
+      requestBody:
+        description: The text and its metadata to be uploaded
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadTextRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadTextResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      security:
+        - textanalyzer_auth:
+            - executor.task
+  /pipelines:
+    post:
+      tags:
+        - pipelines
+      summary: Run a pipeline
+      operationId: runPipeline
+      requestBody:
+        description: Settings for the pipeline
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PipelineStartRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineResultResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      security:
+        - textanalyzer_auth:
+            - executor.task
+      
+components:
+  schemas:
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserResponse'
+    
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: number  
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+  
+    Role:
+      type: string
+      enum:
+        - USER
+      
+    RegistrationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
+  
+    RegistrationResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        username:
+          type: string
+        email:
+          type: string
+        
+  
+    UploadTextRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        text:
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - description
+        - text
+        - labels
+
+    UploadTextResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        text:
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+
+    SingleJobStartRequest:
+      type: object
+      properties:
+        uploadId:
+          type: integer
+        job:
+          $ref: '#/components/schemas/SingleJobType'
+
+    PipelineStartRequest:
+      type: object
+      properties:
+        uploadId:
+          type: integer
+        language:
+          $ref: '#/components/schemas/Language'
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobType'
+
+    JobType:
+      type: string
+      enum:
+        - SENTIMENT_ANALYSIS
+        - POS_TAG
+        - KEYWORD_EXTRACTION
+        - NER
+
+    SingleJobType:
+      type: string
+      enum:
+        - LANGUAGE_DETECTION
+        - PROFANITY_FILTER
+        - PUNCTUATION_RESTORATION
+
+    Language:
+      type: string
+      enum:
+        - ENG
+        - GER
+
+    SingleJobResultResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        uploadId:
+          type: integer
+        result:
+          $ref: '#/components/schemas/SingleJobResult'
+
+    PipelineResultResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        uploadId:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobResult'
+
+    SingleJobResult:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/SingleJobType'
+        result:
+          oneOf:
+            - $ref: '#/components/schemas/ProfanityFilterResult'
+            - $ref: '#/components/schemas/LanguageDetectionResult'
+            - $ref: '#/components/schemas/PunctuationRestorationResult'
+
+    JobResult:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/JobType'
+        result:
+          oneOf:
+            - $ref: '#/components/schemas/SentimentAnalysisResult'
+            - $ref: '#/components/schemas/PosTaggingResult'
+            - $ref: '#/components/schemas/KeywordExtractionResult'
+            - $ref: '#/components/schemas/NERResult'
+
+    SentimentAnalysisResult:
+      type: object
+      properties:
+        positive:
+          type: number
+        negative:
+          type: number
+
+    KeywordExtractionResult:
+      type: object
+      properties:
+        keywords:
+          type: array
+          items:
+            type: string
+
+    PosTaggingResult:
+      type: object
+      properties:
+        taggedText:
+          type: string
+
+    NERResult:
+      type: object
+      properties:
+        taggedText:
+          type: string
+
+    ProfanityFilterResult:
+      type: object
+      properties:
+        filteredText:
+          type: string
+
+    LanguageDetectionResult:
+      type: object
+      properties:
+        eng:
+          type: number
+        ger:
+          type: number
+        other:
+          type: number
+
+    PunctuationRestorationResult:
+      type: object
+      properties:
+        restoredText:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+  securitySchemes:
+    textanalyzer_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://swagger.io/oauth/dialog
+          scopes:
+            executor.task: execute pipeline or task
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
