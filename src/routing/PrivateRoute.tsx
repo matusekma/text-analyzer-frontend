@@ -1,26 +1,26 @@
-import React from "react";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Redirect, Route, RouteProps } from "react-router-dom";
 import SidebarWithHeader from "../components/menu/SidebarWithHeader";
+import { useUser } from "../context/UserContext";
 
 const PrivateRoute = ({
   children,
   ...rest
 }: RouteProps | { children: ReactNode }) => {
-  let auth = { user: true }; // useAuth();
+  const { user, loading } = useUser();
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        auth.user ? (
-          <SidebarWithHeader>{children}</SidebarWithHeader>
-        ) : (
+        !user && !loading ? (
           <Redirect
             to={{
               pathname: "/login",
               state: { from: location },
             }}
           />
+        ) : (
+          <SidebarWithHeader>{children}</SidebarWithHeader>
         )
       }
     />

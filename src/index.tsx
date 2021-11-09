@@ -1,5 +1,6 @@
 import { ColorModeScript } from "@chakra-ui/react"
 import * as React from "react"
+import "focus-visible/dist/focus-visible"
 import ReactDOM from "react-dom"
 import { App } from "./App"
 import reportWebVitals from "./reportWebVitals"
