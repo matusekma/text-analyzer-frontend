@@ -9,7 +9,7 @@ const overrides = {
   styles,
   //borders,
   components: {
-    Button
+    Button,
   },
 }
 export default extendTheme(overrides)
