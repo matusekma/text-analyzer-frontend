@@ -14,8 +14,14 @@ tags:
     description: Operations about authentication and authorization
   - name: pipelines
     description: Operations about pipelines
+  - name: jobs
+    description: Operations about jobs
+  - name: ASR
+    description: Operations about Automatic Speech Recognition
   - name: uploads
     description: Operations about uploads
+  - name: labels
+    description: Operations about labels
 paths:
   /me:
     get:
@@ -54,7 +60,7 @@ paths:
           description: Bad request
           content: {}
         404:
-          description: not found
+          description: Not found
           content: {}
         405:
           description: Validation exception
@@ -92,7 +98,40 @@ paths:
           description: Bad request
           content: {}
         404:
-          description: not found
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /asr:
+    post:
+      tags:
+        - ASR
+      summary: Upload audio for ASR
+      operationId: asr
+      parameters:
+        - in: query
+          name: language
+          schema:
+            $ref: '#/components/schemas/Language'
+          description: Language of the audio
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AsrRequest'
+      responses:
+        200:
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsrResult'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
           content: {}
         405:
           description: Validation exception
@@ -111,8 +150,8 @@ paths:
               $ref: '#/components/schemas/UploadTextRequest'
         required: true
       responses:
-        200:
-          description: OK
+        201:
+          description: CREATED
           content:
             application/json:
               schema:
@@ -121,20 +160,189 @@ paths:
           description: Bad request
           content: {}
         404:
-          description: not found
+          description: Not found
           content: {}
         405:
           description: Validation exception
           content: {}
-      security:
-        - textanalyzer_auth:
-            - executor.task
+    get:
+      tags:
+        - uploads
+      summary: Get uploads of the logged in user
+      operationId: getUploads
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/PageSizeQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadPage'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /uploads/{uploadId}:
+    get:
+      tags:
+        - uploads
+      summary: Get upload
+      operationId: getUpload
+      parameters:
+        - $ref: '#/components/parameters/UploadIdPathParam'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadDetailsResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+    put:
+      tags:
+        - uploads
+      summary: Edit upload
+      operationId: editUpload
+      parameters:
+        - $ref: '#/components/parameters/UploadIdPathParam'
+      requestBody:
+        description: The new upload data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUploadRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EditUploadResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+    delete:
+      tags:
+        - uploads
+      summary: Delete upload
+      operationId: deleteUpload
+      parameters:
+        - $ref: '#/components/parameters/UploadIdPathParam'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+  /labels:
+    post:
+      tags:
+        - labels
+      summary: Create a new label for a user
+      operationId: createLabel
+      requestBody:
+        description: Label data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLabelRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateLabelResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+    get:
+      tags:
+        - labels
+      summary: Get the labels of the logged in user
+      operationId: getLabels
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabelResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
   /pipelines:
+    get:
+      tags:
+        - pipelines
+      summary: Get pipelines of the logged in user
+      operationId: getPipelines
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/PageSizeQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelinePage'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
     post:
       tags:
         - pipelines
-      summary: Run a pipeline
-      operationId: runPipeline
+      summary: Launch a pipeline
+      operationId: launchPipeline
       requestBody:
         description: Settings for the pipeline
         content:
@@ -153,7 +361,39 @@ paths:
           description: Bad request
           content: {}
         404:
-          description: not found
+          description: Not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      security:
+        - textanalyzer_auth:
+            - executor.task
+  /jobs:
+    post:
+      tags:
+        - jobs
+      summary: Run a single job
+      operationId: runJob
+      requestBody:
+        description: Settings for the job
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SingleJobStartRequest'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleJobResultResponse'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
           content: {}
         405:
           description: Validation exception
@@ -188,7 +428,7 @@ components:
       type: object
       properties:
         id:
-          type: number  
+          type: integer  
         username:
           type: string
         email:
@@ -219,7 +459,7 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: integer
         username:
           type: string
         email:
@@ -235,53 +475,235 @@ components:
           type: string
         text:
           type: string
-        labels:
+        labelIds:
           type: array
           items:
-            type: string
+            type: number
       required:
         - name
         - description
         - text
-        - labels
+        - labelIds
 
     UploadTextResponse:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         userId:
-          type: string
+          type: integer
         name:
           type: string
         description:
           type: string
         text:
           type: string
-        labels:
+        labelIds:
           type: array
           items:
-            type: string
+            type: number
+
+    EditUploadRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        text:
+          type: string
+        labelIds:
+          type: array
+          items:
+            type: number
+      required:
+        - name
+        - description
+        - text
+        - labelIds
+
+    EditUploadResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        text:
+          type: string
+        labelIds:
+          type: array
+          items:
+            type: number
+
+    UploadPage:
+      allOf:
+        - $ref: '#/components/schemas/PageData'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/UploadResponse'
+
+    UploadResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        labelIds:
+          type: array
+          items:
+            type: number
+
+    UploadDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        labelIds:
+          type: array
+          items:
+            type: number
+
+    CreateLabelRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    CreateLabelResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+
+    LabelResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
 
     SingleJobStartRequest:
       type: object
       properties:
         uploadId:
           type: integer
+        language:
+          $ref: '#/components/schemas/Language'
         job:
           $ref: '#/components/schemas/SingleJobType'
+      required:
+        - uploadId
+        - job
+
+    PipelinePage:
+      allOf:
+        - $ref: '#/components/schemas/PageData'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/PipelineResponse'
+
+    PipelineResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+        language:
+          $ref: '#/components/schemas/Language'
+        uploadId:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobType'
 
     PipelineStartRequest:
       type: object
       properties:
         uploadId:
           type: integer
+        name:
+          type: string
         language:
           $ref: '#/components/schemas/Language'
         jobs:
           type: array
           items:
             $ref: '#/components/schemas/JobType'
+        options:
+          type: object
+          properties:
+            SENTIMENT_ANALYSIS:
+              type: object
+              additionalProperties:
+                type: string
+            POS_TAG:
+              type: object
+              additionalProperties:
+                type: string
+            KEYWORD_EXTRACTION:
+              type: object
+              additionalProperties:
+                type: string 
+            NER:
+              type: object
+              additionalProperties:
+                type: string    
+            SUMMARIZATION:
+              type: object
+              additionalProperties:
+                type: string                              
+      required:
+        - uploadId
+        - name
+        - language
+        - jobs
 
     JobType:
       type: string
@@ -290,6 +712,7 @@ components:
         - POS_TAG
         - KEYWORD_EXTRACTION
         - NER
+        - SUMMARIZATION
 
     SingleJobType:
       type: string
@@ -301,14 +724,12 @@ components:
     Language:
       type: string
       enum:
-        - ENG
-        - GER
+        - EN
+        - DE
 
     SingleJobResultResponse:
       type: object
       properties:
-        id:
-          type: integer
         uploadId:
           type: integer
         result:
@@ -329,52 +750,119 @@ components:
     SingleJobResult:
       type: object
       properties:
-        name:
+        type:
           $ref: '#/components/schemas/SingleJobType'
+        isFailed:
+          type: boolean
         result:
           oneOf:
             - $ref: '#/components/schemas/ProfanityFilterResult'
             - $ref: '#/components/schemas/LanguageDetectionResult'
             - $ref: '#/components/schemas/PunctuationRestorationResult'
+            - $ref: '#/components/schemas/FailedSingleJobResult'
 
     JobResult:
       type: object
       properties:
-        name:
+        type:
           $ref: '#/components/schemas/JobType'
+        isFailed:
+          type: boolean
         result:
           oneOf:
             - $ref: '#/components/schemas/SentimentAnalysisResult'
             - $ref: '#/components/schemas/PosTaggingResult'
             - $ref: '#/components/schemas/KeywordExtractionResult'
             - $ref: '#/components/schemas/NERResult'
+            - $ref: '#/components/schemas/SummarizationResult'
+            - $ref: '#/components/schemas/FailedPipelineJobResult'
 
     SentimentAnalysisResult:
       type: object
       properties:
-        positive:
-          type: number
-        negative:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SentenceSentimentResult'
+
+    SentenceSentimentResult:
+      type: object
+      properties:
+        sentence:
+          type: string
+        sentiment:
+          type: string
+        confidence:
           type: number
 
     KeywordExtractionResult:
       type: object
       properties:
-        keywords:
+        results:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/KeywordResultEntity'
 
-    PosTaggingResult:
+
+    KeywordResultEntity:
       type: object
       properties:
-        taggedText:
+        keyword:
           type: string
+        score:
+          type: number
+      required:
+        - keyword
+        - score
 
     NERResult:
       type: object
       properties:
-        taggedText:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NERResultEntity'
+    
+    NERResultEntity:
+      type: object
+      properties:
+        text:
+          type: string
+        label:
+          type: string
+
+    PosTaggingResult:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PosTaggingResultEntity'
+    
+    PosTaggingResultEntity:
+      type: object
+      properties:
+        text:
+          type: string
+        lemma:
+          type: string
+        tag: 
+          type: string
+
+    SummarizationResult:
+      type: object
+      properties:
+        results:
+          type: array
+          items: 
+            type: string
+
+    FailedPipelineJobResult:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/JobType'
+        error:
           type: string
 
     ProfanityFilterResult:
@@ -386,17 +874,40 @@ components:
     LanguageDetectionResult:
       type: object
       properties:
-        eng:
-          type: number
-        ger:
-          type: number
-        other:
-          type: number
+        languages:
+          type: array
+          items:
+            type: string
+        confidences:
+          type: array
+          items:
+            type: number
 
     PunctuationRestorationResult:
       type: object
       properties:
         restoredText:
+          type: string
+
+    FailedSingleJobResult:
+      type: object
+      properties:
+        error:
+          type: string
+
+    AsrRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+        - file  
+
+    AsrResult:
+      type: object
+      properties:
+        text:
           type: string
 
     User:
@@ -411,6 +922,82 @@ components:
           type: string
         password:
           type: string
+
+    PageData:
+      type: object
+      properties:
+        empty:
+          description: Indicates whether the result set is empty
+          example: false
+          type: boolean
+        first:
+          description: Indicates whether this is the first page
+          example: true
+          type: boolean
+        last:
+          description: Indicates whether this is the last page
+          example: true
+          type: boolean
+        number:
+          description: Page number showed
+          example: 1
+          type: number
+          format: int
+        numberOfElements:
+          description: Number of elements present on the page
+          example: 10
+          type: number
+          format: int
+        size:
+          description: Page size
+          example: 10
+          type: number
+          format: int
+        totalElements:
+          description: Number of elements in the result set (not just on the page)
+          example: 76
+          type: number
+          format: int
+        totalPages:
+          description: Number of pages in the result set
+          example: 8
+          type: number
+          format: int
+      
+  parameters:
+
+    UploadIdPathParam:
+      in: path
+      name: uploadId
+      schema:
+        type: integer
+      required: true
+      description: Id of the upload
+
+    PageQueryParam:
+      in: query
+      name: page
+      schema:
+        type: integer
+      required: true
+      description: Page number requested
+
+    PageSizeQueryParam:
+      in: query
+      name: size
+      schema:
+        type: integer
+      required: true
+      description: Page size requested
+
+    SortQueryParam:
+      in: query
+      name: sort
+      schema:
+        type: string
+      required: false
+      example: name,ASC
+      description: Sort property and order
 
   securitySchemes:
     textanalyzer_auth:

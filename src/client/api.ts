@@ -24,6 +24,163 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 /**
  * 
  * @export
+ * @interface AsrResult
+ */
+export interface AsrResult {
+    /**
+     * 
+     * @type {string}
+     * @memberof AsrResult
+     */
+    text?: string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateLabelRequest
+ */
+export interface CreateLabelRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateLabelRequest
+     */
+    name: string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateLabelResponse
+ */
+export interface CreateLabelResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateLabelResponse
+     */
+    id?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateLabelResponse
+     */
+    userId?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateLabelResponse
+     */
+    name?: string;
+}
+/**
+ * 
+ * @export
+ * @interface EditUploadRequest
+ */
+export interface EditUploadRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof EditUploadRequest
+     */
+    name: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EditUploadRequest
+     */
+    description: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EditUploadRequest
+     */
+    text: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof EditUploadRequest
+     */
+    labelIds: Array<number>;
+}
+/**
+ * 
+ * @export
+ * @interface EditUploadResponse
+ */
+export interface EditUploadResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof EditUploadResponse
+     */
+    id?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof EditUploadResponse
+     */
+    userId?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof EditUploadResponse
+     */
+    name?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EditUploadResponse
+     */
+    description?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EditUploadResponse
+     */
+    text?: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof EditUploadResponse
+     */
+    labelIds?: Array<number>;
+}
+/**
+ * 
+ * @export
+ * @interface FailedPipelineJobResult
+ */
+export interface FailedPipelineJobResult {
+    /**
+     * 
+     * @type {JobType}
+     * @memberof FailedPipelineJobResult
+     */
+    type?: JobType;
+    /**
+     * 
+     * @type {string}
+     * @memberof FailedPipelineJobResult
+     */
+    error?: string;
+}
+/**
+ * 
+ * @export
+ * @interface FailedSingleJobResult
+ */
+export interface FailedSingleJobResult {
+    /**
+     * 
+     * @type {string}
+     * @memberof FailedSingleJobResult
+     */
+    error?: string;
+}
+/**
+ * 
+ * @export
  * @interface JobResult
  */
 export interface JobResult {
@@ -32,13 +189,19 @@ export interface JobResult {
      * @type {JobType}
      * @memberof JobResult
      */
-    name?: JobType;
+    type?: JobType;
     /**
      * 
-     * @type {SentimentAnalysisResult | PosTaggingResult | KeywordExtractionResult | NERResult}
+     * @type {boolean}
      * @memberof JobResult
      */
-    result?: SentimentAnalysisResult | PosTaggingResult | KeywordExtractionResult | NERResult;
+    isFailed?: boolean;
+    /**
+     * 
+     * @type {SentimentAnalysisResult | PosTaggingResult | KeywordExtractionResult | NERResult | SummarizationResult | FailedPipelineJobResult}
+     * @memberof JobResult
+     */
+    result?: SentimentAnalysisResult | PosTaggingResult | KeywordExtractionResult | NERResult | SummarizationResult | FailedPipelineJobResult;
 }
 /**
  * 
@@ -50,7 +213,8 @@ export enum JobType {
     SentimentAnalysis = 'SENTIMENT_ANALYSIS',
     PosTag = 'POS_TAG',
     KeywordExtraction = 'KEYWORD_EXTRACTION',
-    Ner = 'NER'
+    Ner = 'NER',
+    Summarization = 'SUMMARIZATION'
 }
 
 /**
@@ -61,10 +225,54 @@ export enum JobType {
 export interface KeywordExtractionResult {
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<KeywordResultEntity>}
      * @memberof KeywordExtractionResult
      */
-    keywords?: Array<string>;
+    results?: Array<KeywordResultEntity>;
+}
+/**
+ * 
+ * @export
+ * @interface KeywordResultEntity
+ */
+export interface KeywordResultEntity {
+    /**
+     * 
+     * @type {string}
+     * @memberof KeywordResultEntity
+     */
+    keyword: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof KeywordResultEntity
+     */
+    score: number;
+}
+/**
+ * 
+ * @export
+ * @interface LabelResponse
+ */
+export interface LabelResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof LabelResponse
+     */
+    id?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof LabelResponse
+     */
+    userId?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof LabelResponse
+     */
+    name?: string;
 }
 /**
  * 
@@ -73,8 +281,8 @@ export interface KeywordExtractionResult {
  */
 
 export enum Language {
-    Eng = 'ENG',
-    Ger = 'GER'
+    En = 'EN',
+    De = 'DE'
 }
 
 /**
@@ -85,22 +293,16 @@ export enum Language {
 export interface LanguageDetectionResult {
     /**
      * 
-     * @type {number}
+     * @type {Array<string>}
      * @memberof LanguageDetectionResult
      */
-    eng?: number;
+    languages?: Array<string>;
     /**
      * 
-     * @type {number}
+     * @type {Array<number>}
      * @memberof LanguageDetectionResult
      */
-    ger?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof LanguageDetectionResult
-     */
-    other?: number;
+    confidences?: Array<number>;
 }
 /**
  * 
@@ -148,10 +350,207 @@ export interface LoginResponse {
 export interface NERResult {
     /**
      * 
-     * @type {string}
+     * @type {Array<NERResultEntity>}
      * @memberof NERResult
      */
-    taggedText?: string;
+    results?: Array<NERResultEntity>;
+}
+/**
+ * 
+ * @export
+ * @interface NERResultEntity
+ */
+export interface NERResultEntity {
+    /**
+     * 
+     * @type {string}
+     * @memberof NERResultEntity
+     */
+    text?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NERResultEntity
+     */
+    label?: string;
+}
+/**
+ * 
+ * @export
+ * @interface PageData
+ */
+export interface PageData {
+    /**
+     * Indicates whether the result set is empty
+     * @type {boolean}
+     * @memberof PageData
+     */
+    empty?: boolean;
+    /**
+     * Indicates whether this is the first page
+     * @type {boolean}
+     * @memberof PageData
+     */
+    first?: boolean;
+    /**
+     * Indicates whether this is the last page
+     * @type {boolean}
+     * @memberof PageData
+     */
+    last?: boolean;
+    /**
+     * Page number showed
+     * @type {number}
+     * @memberof PageData
+     */
+    number?: number;
+    /**
+     * Number of elements present on the page
+     * @type {number}
+     * @memberof PageData
+     */
+    numberOfElements?: number;
+    /**
+     * Page size
+     * @type {number}
+     * @memberof PageData
+     */
+    size?: number;
+    /**
+     * Number of elements in the result set (not just on the page)
+     * @type {number}
+     * @memberof PageData
+     */
+    totalElements?: number;
+    /**
+     * Number of pages in the result set
+     * @type {number}
+     * @memberof PageData
+     */
+    totalPages?: number;
+}
+/**
+ * 
+ * @export
+ * @interface PipelinePage
+ */
+export interface PipelinePage {
+    /**
+     * Indicates whether the result set is empty
+     * @type {boolean}
+     * @memberof PipelinePage
+     */
+    empty?: boolean;
+    /**
+     * Indicates whether this is the first page
+     * @type {boolean}
+     * @memberof PipelinePage
+     */
+    first?: boolean;
+    /**
+     * Indicates whether this is the last page
+     * @type {boolean}
+     * @memberof PipelinePage
+     */
+    last?: boolean;
+    /**
+     * Page number showed
+     * @type {number}
+     * @memberof PipelinePage
+     */
+    number?: number;
+    /**
+     * Number of elements present on the page
+     * @type {number}
+     * @memberof PipelinePage
+     */
+    numberOfElements?: number;
+    /**
+     * Page size
+     * @type {number}
+     * @memberof PipelinePage
+     */
+    size?: number;
+    /**
+     * Number of elements in the result set (not just on the page)
+     * @type {number}
+     * @memberof PipelinePage
+     */
+    totalElements?: number;
+    /**
+     * Number of pages in the result set
+     * @type {number}
+     * @memberof PipelinePage
+     */
+    totalPages?: number;
+    /**
+     * 
+     * @type {Array<PipelineResponse>}
+     * @memberof PipelinePage
+     */
+    content?: Array<PipelineResponse>;
+}
+/**
+ * 
+ * @export
+ * @interface PipelinePageAllOf
+ */
+export interface PipelinePageAllOf {
+    /**
+     * 
+     * @type {Array<PipelineResponse>}
+     * @memberof PipelinePageAllOf
+     */
+    content?: Array<PipelineResponse>;
+}
+/**
+ * 
+ * @export
+ * @interface PipelineResponse
+ */
+export interface PipelineResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof PipelineResponse
+     */
+    id?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PipelineResponse
+     */
+    userId?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PipelineResponse
+     */
+    name?: string;
+    /**
+     * 
+     * @type {Language}
+     * @memberof PipelineResponse
+     */
+    language?: Language;
+    /**
+     * 
+     * @type {string}
+     * @memberof PipelineResponse
+     */
+    uploadId?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PipelineResponse
+     */
+    createdAt?: string;
+    /**
+     * 
+     * @type {Array<JobType>}
+     * @memberof PipelineResponse
+     */
+    jobs?: Array<JobType>;
 }
 /**
  * 
@@ -189,19 +588,68 @@ export interface PipelineStartRequest {
      * @type {number}
      * @memberof PipelineStartRequest
      */
-    uploadId?: number;
+    uploadId: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PipelineStartRequest
+     */
+    name: string;
     /**
      * 
      * @type {Language}
      * @memberof PipelineStartRequest
      */
-    language?: Language;
+    language: Language;
     /**
      * 
      * @type {Array<JobType>}
      * @memberof PipelineStartRequest
      */
-    jobs?: Array<JobType>;
+    jobs: Array<JobType>;
+    /**
+     * 
+     * @type {PipelineStartRequestOptions}
+     * @memberof PipelineStartRequest
+     */
+    options?: PipelineStartRequestOptions;
+}
+/**
+ * 
+ * @export
+ * @interface PipelineStartRequestOptions
+ */
+export interface PipelineStartRequestOptions {
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof PipelineStartRequestOptions
+     */
+    SENTIMENT_ANALYSIS?: { [key: string]: string; };
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof PipelineStartRequestOptions
+     */
+    POS_TAG?: { [key: string]: string; };
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof PipelineStartRequestOptions
+     */
+    KEYWORD_EXTRACTION?: { [key: string]: string; };
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof PipelineStartRequestOptions
+     */
+    NER?: { [key: string]: string; };
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof PipelineStartRequestOptions
+     */
+    SUMMARIZATION?: { [key: string]: string; };
 }
 /**
  * 
@@ -211,10 +659,35 @@ export interface PipelineStartRequest {
 export interface PosTaggingResult {
     /**
      * 
-     * @type {string}
+     * @type {Array<PosTaggingResultEntity>}
      * @memberof PosTaggingResult
      */
-    taggedText?: string;
+    results?: Array<PosTaggingResultEntity>;
+}
+/**
+ * 
+ * @export
+ * @interface PosTaggingResultEntity
+ */
+export interface PosTaggingResultEntity {
+    /**
+     * 
+     * @type {string}
+     * @memberof PosTaggingResultEntity
+     */
+    text?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PosTaggingResultEntity
+     */
+    lemma?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PosTaggingResultEntity
+     */
+    tag?: string;
 }
 /**
  * 
@@ -305,21 +778,40 @@ export enum Role {
 /**
  * 
  * @export
+ * @interface SentenceSentimentResult
+ */
+export interface SentenceSentimentResult {
+    /**
+     * 
+     * @type {string}
+     * @memberof SentenceSentimentResult
+     */
+    sentence?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SentenceSentimentResult
+     */
+    sentiment?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof SentenceSentimentResult
+     */
+    confidence?: number;
+}
+/**
+ * 
+ * @export
  * @interface SentimentAnalysisResult
  */
 export interface SentimentAnalysisResult {
     /**
      * 
-     * @type {number}
+     * @type {Array<SentenceSentimentResult>}
      * @memberof SentimentAnalysisResult
      */
-    positive?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof SentimentAnalysisResult
-     */
-    negative?: number;
+    results?: Array<SentenceSentimentResult>;
 }
 /**
  * 
@@ -332,13 +824,19 @@ export interface SingleJobResult {
      * @type {SingleJobType}
      * @memberof SingleJobResult
      */
-    name?: SingleJobType;
+    type?: SingleJobType;
     /**
      * 
-     * @type {ProfanityFilterResult | LanguageDetectionResult | PunctuationRestorationResult}
+     * @type {boolean}
      * @memberof SingleJobResult
      */
-    result?: ProfanityFilterResult | LanguageDetectionResult | PunctuationRestorationResult;
+    isFailed?: boolean;
+    /**
+     * 
+     * @type {ProfanityFilterResult | LanguageDetectionResult | PunctuationRestorationResult | FailedSingleJobResult}
+     * @memberof SingleJobResult
+     */
+    result?: ProfanityFilterResult | LanguageDetectionResult | PunctuationRestorationResult | FailedSingleJobResult;
 }
 /**
  * 
@@ -346,12 +844,6 @@ export interface SingleJobResult {
  * @interface SingleJobResultResponse
  */
 export interface SingleJobResultResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof SingleJobResultResponse
-     */
-    id?: number;
     /**
      * 
      * @type {number}
@@ -376,13 +868,19 @@ export interface SingleJobStartRequest {
      * @type {number}
      * @memberof SingleJobStartRequest
      */
-    uploadId?: number;
+    uploadId: number;
+    /**
+     * 
+     * @type {Language}
+     * @memberof SingleJobStartRequest
+     */
+    language?: Language;
     /**
      * 
      * @type {SingleJobType}
      * @memberof SingleJobStartRequest
      */
-    job?: SingleJobType;
+    job: SingleJobType;
 }
 /**
  * 
@@ -396,6 +894,185 @@ export enum SingleJobType {
     PunctuationRestoration = 'PUNCTUATION_RESTORATION'
 }
 
+/**
+ * 
+ * @export
+ * @interface SummarizationResult
+ */
+export interface SummarizationResult {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof SummarizationResult
+     */
+    results?: Array<string>;
+}
+/**
+ * 
+ * @export
+ * @interface UploadDetailsResponse
+ */
+export interface UploadDetailsResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof UploadDetailsResponse
+     */
+    id?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof UploadDetailsResponse
+     */
+    userId?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UploadDetailsResponse
+     */
+    name?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UploadDetailsResponse
+     */
+    description?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UploadDetailsResponse
+     */
+    text?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UploadDetailsResponse
+     */
+    createdAt?: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof UploadDetailsResponse
+     */
+    labelIds?: Array<number>;
+}
+/**
+ * 
+ * @export
+ * @interface UploadPage
+ */
+export interface UploadPage {
+    /**
+     * Indicates whether the result set is empty
+     * @type {boolean}
+     * @memberof UploadPage
+     */
+    empty?: boolean;
+    /**
+     * Indicates whether this is the first page
+     * @type {boolean}
+     * @memberof UploadPage
+     */
+    first?: boolean;
+    /**
+     * Indicates whether this is the last page
+     * @type {boolean}
+     * @memberof UploadPage
+     */
+    last?: boolean;
+    /**
+     * Page number showed
+     * @type {number}
+     * @memberof UploadPage
+     */
+    number?: number;
+    /**
+     * Number of elements present on the page
+     * @type {number}
+     * @memberof UploadPage
+     */
+    numberOfElements?: number;
+    /**
+     * Page size
+     * @type {number}
+     * @memberof UploadPage
+     */
+    size?: number;
+    /**
+     * Number of elements in the result set (not just on the page)
+     * @type {number}
+     * @memberof UploadPage
+     */
+    totalElements?: number;
+    /**
+     * Number of pages in the result set
+     * @type {number}
+     * @memberof UploadPage
+     */
+    totalPages?: number;
+    /**
+     * 
+     * @type {Array<UploadResponse>}
+     * @memberof UploadPage
+     */
+    content?: Array<UploadResponse>;
+}
+/**
+ * 
+ * @export
+ * @interface UploadPageAllOf
+ */
+export interface UploadPageAllOf {
+    /**
+     * 
+     * @type {Array<UploadResponse>}
+     * @memberof UploadPageAllOf
+     */
+    content?: Array<UploadResponse>;
+}
+/**
+ * 
+ * @export
+ * @interface UploadResponse
+ */
+export interface UploadResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof UploadResponse
+     */
+    id?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof UploadResponse
+     */
+    userId?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UploadResponse
+     */
+    name?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UploadResponse
+     */
+    description?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UploadResponse
+     */
+    createdAt?: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof UploadResponse
+     */
+    labelIds?: Array<number>;
+}
 /**
  * 
  * @export
@@ -422,10 +1099,10 @@ export interface UploadTextRequest {
     text: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<number>}
      * @memberof UploadTextRequest
      */
-    labels: Array<string>;
+    labelIds: Array<number>;
 }
 /**
  * 
@@ -435,16 +1112,16 @@ export interface UploadTextRequest {
 export interface UploadTextResponse {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof UploadTextResponse
      */
-    id?: string;
+    id?: number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof UploadTextResponse
      */
-    userId?: string;
+    userId?: number;
     /**
      * 
      * @type {string}
@@ -465,10 +1142,10 @@ export interface UploadTextResponse {
     text?: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<number>}
      * @memberof UploadTextResponse
      */
-    labels?: Array<string>;
+    labelIds?: Array<number>;
 }
 /**
  * 
@@ -532,6 +1209,126 @@ export interface UserResponse {
      */
     role?: Role;
 }
+
+/**
+ * ASRApi - axios parameter creator
+ * @export
+ */
+export const ASRApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Upload audio for ASR
+         * @param {any} file 
+         * @param {Language} [language] Language of the audio
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        asr: async (file: any, language?: Language, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('asr', 'file', file)
+            const localVarPath = `/asr`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            if (language !== undefined) {
+                localVarQueryParameter['language'] = language;
+            }
+
+
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ASRApi - functional programming interface
+ * @export
+ */
+export const ASRApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ASRApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Upload audio for ASR
+         * @param {any} file 
+         * @param {Language} [language] Language of the audio
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async asr(file: any, language?: Language, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AsrResult>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.asr(file, language, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * ASRApi - factory interface
+ * @export
+ */
+export const ASRApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ASRApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Upload audio for ASR
+         * @param {any} file 
+         * @param {Language} [language] Language of the audio
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        asr(file: any, language?: Language, options?: any): AxiosPromise<AsrResult> {
+            return localVarFp.asr(file, language, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ASRApi - object-oriented interface
+ * @export
+ * @class ASRApi
+ * @extends {BaseAPI}
+ */
+export class ASRApi extends BaseAPI {
+    /**
+     * 
+     * @summary Upload audio for ASR
+     * @param {any} file 
+     * @param {Language} [language] Language of the audio
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ASRApi
+     */
+    public asr(file: any, language?: Language, options?: any) {
+        return ASRApiFp(this.configuration).asr(file, language, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
 
 /**
  * AuthApi - axios parameter creator
@@ -830,6 +1627,284 @@ export class AuthApi extends BaseAPI {
 
 
 /**
+ * JobsApi - axios parameter creator
+ * @export
+ */
+export const JobsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Run a single job
+         * @param {SingleJobStartRequest} singleJobStartRequest Settings for the job
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        runJob: async (singleJobStartRequest: SingleJobStartRequest, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'singleJobStartRequest' is not null or undefined
+            assertParamExists('runJob', 'singleJobStartRequest', singleJobStartRequest)
+            const localVarPath = `/jobs`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication textanalyzer_auth required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "textanalyzer_auth", ["executor.task"], configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(singleJobStartRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * JobsApi - functional programming interface
+ * @export
+ */
+export const JobsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = JobsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Run a single job
+         * @param {SingleJobStartRequest} singleJobStartRequest Settings for the job
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async runJob(singleJobStartRequest: SingleJobStartRequest, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SingleJobResultResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.runJob(singleJobStartRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * JobsApi - factory interface
+ * @export
+ */
+export const JobsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = JobsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Run a single job
+         * @param {SingleJobStartRequest} singleJobStartRequest Settings for the job
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        runJob(singleJobStartRequest: SingleJobStartRequest, options?: any): AxiosPromise<SingleJobResultResponse> {
+            return localVarFp.runJob(singleJobStartRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * JobsApi - object-oriented interface
+ * @export
+ * @class JobsApi
+ * @extends {BaseAPI}
+ */
+export class JobsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Run a single job
+     * @param {SingleJobStartRequest} singleJobStartRequest Settings for the job
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof JobsApi
+     */
+    public runJob(singleJobStartRequest: SingleJobStartRequest, options?: any) {
+        return JobsApiFp(this.configuration).runJob(singleJobStartRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * LabelsApi - axios parameter creator
+ * @export
+ */
+export const LabelsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Create a new label for a user
+         * @param {CreateLabelRequest} createLabelRequest Label data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createLabel: async (createLabelRequest: CreateLabelRequest, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createLabelRequest' is not null or undefined
+            assertParamExists('createLabel', 'createLabelRequest', createLabelRequest)
+            const localVarPath = `/labels`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createLabelRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get the labels of the logged in user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLabels: async (options: any = {}): Promise<RequestArgs> => {
+            const localVarPath = `/labels`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * LabelsApi - functional programming interface
+ * @export
+ */
+export const LabelsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = LabelsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Create a new label for a user
+         * @param {CreateLabelRequest} createLabelRequest Label data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createLabel(createLabelRequest: CreateLabelRequest, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateLabelResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createLabel(createLabelRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get the labels of the logged in user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLabels(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<LabelResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLabels(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * LabelsApi - factory interface
+ * @export
+ */
+export const LabelsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = LabelsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Create a new label for a user
+         * @param {CreateLabelRequest} createLabelRequest Label data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createLabel(createLabelRequest: CreateLabelRequest, options?: any): AxiosPromise<CreateLabelResponse> {
+            return localVarFp.createLabel(createLabelRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get the labels of the logged in user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLabels(options?: any): AxiosPromise<Array<LabelResponse>> {
+            return localVarFp.getLabels(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * LabelsApi - object-oriented interface
+ * @export
+ * @class LabelsApi
+ * @extends {BaseAPI}
+ */
+export class LabelsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Create a new label for a user
+     * @param {CreateLabelRequest} createLabelRequest Label data
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof LabelsApi
+     */
+    public createLabel(createLabelRequest: CreateLabelRequest, options?: any) {
+        return LabelsApiFp(this.configuration).createLabel(createLabelRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get the labels of the logged in user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof LabelsApi
+     */
+    public getLabels(options?: any) {
+        return LabelsApiFp(this.configuration).getLabels(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
  * PipelinesApi - axios parameter creator
  * @export
  */
@@ -837,14 +1912,63 @@ export const PipelinesApiAxiosParamCreator = function (configuration?: Configura
     return {
         /**
          * 
-         * @summary Run a pipeline
+         * @summary Get pipelines of the logged in user
+         * @param {number} page Page number requested
+         * @param {number} size Page size requested
+         * @param {string} [sort] Sort property and order
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPipelines: async (page: number, size: number, sort?: string, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'page' is not null or undefined
+            assertParamExists('getPipelines', 'page', page)
+            // verify required parameter 'size' is not null or undefined
+            assertParamExists('getPipelines', 'size', size)
+            const localVarPath = `/pipelines`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (size !== undefined) {
+                localVarQueryParameter['size'] = size;
+            }
+
+            if (sort !== undefined) {
+                localVarQueryParameter['sort'] = sort;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Launch a pipeline
          * @param {PipelineStartRequest} pipelineStartRequest Settings for the pipeline
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        runPipeline: async (pipelineStartRequest: PipelineStartRequest, options: any = {}): Promise<RequestArgs> => {
+        launchPipeline: async (pipelineStartRequest: PipelineStartRequest, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'pipelineStartRequest' is not null or undefined
-            assertParamExists('runPipeline', 'pipelineStartRequest', pipelineStartRequest)
+            assertParamExists('launchPipeline', 'pipelineStartRequest', pipelineStartRequest)
             const localVarPath = `/pipelines`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -887,13 +2011,26 @@ export const PipelinesApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Run a pipeline
+         * @summary Get pipelines of the logged in user
+         * @param {number} page Page number requested
+         * @param {number} size Page size requested
+         * @param {string} [sort] Sort property and order
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPipelines(page: number, size: number, sort?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PipelinePage>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPipelines(page, size, sort, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Launch a pipeline
          * @param {PipelineStartRequest} pipelineStartRequest Settings for the pipeline
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async runPipeline(pipelineStartRequest: PipelineStartRequest, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PipelineResultResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.runPipeline(pipelineStartRequest, options);
+        async launchPipeline(pipelineStartRequest: PipelineStartRequest, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PipelineResultResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.launchPipeline(pipelineStartRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -908,13 +2045,25 @@ export const PipelinesApiFactory = function (configuration?: Configuration, base
     return {
         /**
          * 
-         * @summary Run a pipeline
+         * @summary Get pipelines of the logged in user
+         * @param {number} page Page number requested
+         * @param {number} size Page size requested
+         * @param {string} [sort] Sort property and order
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPipelines(page: number, size: number, sort?: string, options?: any): AxiosPromise<PipelinePage> {
+            return localVarFp.getPipelines(page, size, sort, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Launch a pipeline
          * @param {PipelineStartRequest} pipelineStartRequest Settings for the pipeline
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        runPipeline(pipelineStartRequest: PipelineStartRequest, options?: any): AxiosPromise<PipelineResultResponse> {
-            return localVarFp.runPipeline(pipelineStartRequest, options).then((request) => request(axios, basePath));
+        launchPipeline(pipelineStartRequest: PipelineStartRequest, options?: any): AxiosPromise<PipelineResultResponse> {
+            return localVarFp.launchPipeline(pipelineStartRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -928,14 +2077,28 @@ export const PipelinesApiFactory = function (configuration?: Configuration, base
 export class PipelinesApi extends BaseAPI {
     /**
      * 
-     * @summary Run a pipeline
+     * @summary Get pipelines of the logged in user
+     * @param {number} page Page number requested
+     * @param {number} size Page size requested
+     * @param {string} [sort] Sort property and order
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PipelinesApi
+     */
+    public getPipelines(page: number, size: number, sort?: string, options?: any) {
+        return PipelinesApiFp(this.configuration).getPipelines(page, size, sort, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Launch a pipeline
      * @param {PipelineStartRequest} pipelineStartRequest Settings for the pipeline
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PipelinesApi
      */
-    public runPipeline(pipelineStartRequest: PipelineStartRequest, options?: any) {
-        return PipelinesApiFp(this.configuration).runPipeline(pipelineStartRequest, options).then((request) => request(this.axios, this.basePath));
+    public launchPipeline(pipelineStartRequest: PipelineStartRequest, options?: any) {
+        return PipelinesApiFp(this.configuration).launchPipeline(pipelineStartRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -946,6 +2109,163 @@ export class PipelinesApi extends BaseAPI {
  */
 export const UploadsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary Delete upload
+         * @param {number} uploadId Id of the upload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUpload: async (uploadId: number, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uploadId' is not null or undefined
+            assertParamExists('deleteUpload', 'uploadId', uploadId)
+            const localVarPath = `/uploads/{uploadId}`
+                .replace(`{${"uploadId"}}`, encodeURIComponent(String(uploadId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Edit upload
+         * @param {number} uploadId Id of the upload
+         * @param {EditUploadRequest} editUploadRequest The new upload data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        editUpload: async (uploadId: number, editUploadRequest: EditUploadRequest, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uploadId' is not null or undefined
+            assertParamExists('editUpload', 'uploadId', uploadId)
+            // verify required parameter 'editUploadRequest' is not null or undefined
+            assertParamExists('editUpload', 'editUploadRequest', editUploadRequest)
+            const localVarPath = `/uploads/{uploadId}`
+                .replace(`{${"uploadId"}}`, encodeURIComponent(String(uploadId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(editUploadRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get upload
+         * @param {number} uploadId Id of the upload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUpload: async (uploadId: number, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uploadId' is not null or undefined
+            assertParamExists('getUpload', 'uploadId', uploadId)
+            const localVarPath = `/uploads/{uploadId}`
+                .replace(`{${"uploadId"}}`, encodeURIComponent(String(uploadId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get uploads of the logged in user
+         * @param {number} page Page number requested
+         * @param {number} size Page size requested
+         * @param {string} [sort] Sort property and order
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUploads: async (page: number, size: number, sort?: string, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'page' is not null or undefined
+            assertParamExists('getUploads', 'page', page)
+            // verify required parameter 'size' is not null or undefined
+            assertParamExists('getUploads', 'size', size)
+            const localVarPath = `/uploads`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (size !== undefined) {
+                localVarQueryParameter['size'] = size;
+            }
+
+            if (sort !== undefined) {
+                localVarQueryParameter['sort'] = sort;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary Upload text
@@ -967,10 +2287,6 @@ export const UploadsApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication textanalyzer_auth required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "textanalyzer_auth", ["executor.task"], configuration)
 
 
     
@@ -998,6 +2314,53 @@ export const UploadsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Delete upload
+         * @param {number} uploadId Id of the upload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteUpload(uploadId: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUpload(uploadId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Edit upload
+         * @param {number} uploadId Id of the upload
+         * @param {EditUploadRequest} editUploadRequest The new upload data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async editUpload(uploadId: number, editUploadRequest: EditUploadRequest, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EditUploadResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.editUpload(uploadId, editUploadRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get upload
+         * @param {number} uploadId Id of the upload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUpload(uploadId: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadDetailsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUpload(uploadId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get uploads of the logged in user
+         * @param {number} page Page number requested
+         * @param {number} size Page size requested
+         * @param {string} [sort] Sort property and order
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUploads(page: number, size: number, sort?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadPage>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUploads(page, size, sort, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Upload text
          * @param {UploadTextRequest} uploadTextRequest The text and its metadata to be uploaded
          * @param {*} [options] Override http request option.
@@ -1019,6 +2382,49 @@ export const UploadsApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @summary Delete upload
+         * @param {number} uploadId Id of the upload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUpload(uploadId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteUpload(uploadId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Edit upload
+         * @param {number} uploadId Id of the upload
+         * @param {EditUploadRequest} editUploadRequest The new upload data
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        editUpload(uploadId: number, editUploadRequest: EditUploadRequest, options?: any): AxiosPromise<EditUploadResponse> {
+            return localVarFp.editUpload(uploadId, editUploadRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get upload
+         * @param {number} uploadId Id of the upload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUpload(uploadId: number, options?: any): AxiosPromise<UploadDetailsResponse> {
+            return localVarFp.getUpload(uploadId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get uploads of the logged in user
+         * @param {number} page Page number requested
+         * @param {number} size Page size requested
+         * @param {string} [sort] Sort property and order
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUploads(page: number, size: number, sort?: string, options?: any): AxiosPromise<UploadPage> {
+            return localVarFp.getUploads(page, size, sort, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Upload text
          * @param {UploadTextRequest} uploadTextRequest The text and its metadata to be uploaded
          * @param {*} [options] Override http request option.
@@ -1037,6 +2443,57 @@ export const UploadsApiFactory = function (configuration?: Configuration, basePa
  * @extends {BaseAPI}
  */
 export class UploadsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Delete upload
+     * @param {number} uploadId Id of the upload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UploadsApi
+     */
+    public deleteUpload(uploadId: number, options?: any) {
+        return UploadsApiFp(this.configuration).deleteUpload(uploadId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Edit upload
+     * @param {number} uploadId Id of the upload
+     * @param {EditUploadRequest} editUploadRequest The new upload data
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UploadsApi
+     */
+    public editUpload(uploadId: number, editUploadRequest: EditUploadRequest, options?: any) {
+        return UploadsApiFp(this.configuration).editUpload(uploadId, editUploadRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get upload
+     * @param {number} uploadId Id of the upload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UploadsApi
+     */
+    public getUpload(uploadId: number, options?: any) {
+        return UploadsApiFp(this.configuration).getUpload(uploadId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get uploads of the logged in user
+     * @param {number} page Page number requested
+     * @param {number} size Page size requested
+     * @param {string} [sort] Sort property and order
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UploadsApi
+     */
+    public getUploads(page: number, size: number, sort?: string, options?: any) {
+        return UploadsApiFp(this.configuration).getUploads(page, size, sort, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary Upload text
