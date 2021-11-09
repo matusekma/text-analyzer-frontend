@@ -2,8 +2,13 @@ import React from "react";
 import Select from "react-select";
 import { SelectComponentsProps } from "react-select/src/Select";
 
+export interface Option {
+  label: string;
+  value: number;
+}
+
 interface MultiSelectProps extends SelectComponentsProps {
-  options: string[];
+  options: Option[];
 }
 
 const customStyles = {
@@ -21,13 +26,12 @@ const customStyles = {
 };
 
 const MultiSelect = ({ options, ...rest }: MultiSelectProps) => {
-  const selectOptions = options.map((o) => ({ label: o, value: o }));
 
   return (
     <Select
       isMulti
       closeMenuOnSelect={false}
-      options={selectOptions}
+      options={options}
       styles={customStyles}
       {...rest}
     />

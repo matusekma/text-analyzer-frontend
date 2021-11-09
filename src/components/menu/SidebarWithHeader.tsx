@@ -29,7 +29,7 @@ const LinkItems: Array<LinkItemProps> = [
   { name: "Upload Text", icon: FiFileText, to: "/upload-text" },
   { name: "Upload Audio", icon: FiVolume2, to: "/upload-audio" },
   { name: "My Uploads", icon: FiDatabase, to: "/my-uploads" },
-  { name: "Analysis History", icon: FiSave, to: "/analysis-history" },
+  { name: "Pipeline History", icon: FiSave, to: "/pipeline-history" },
 ];
 
 interface SidebarWithHeaderProps {
