@@ -14,10 +14,7 @@ const PrivateRoute = ({
       render={({ location }) =>
         !user && !loading ? (
           <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location },
-            }}
+            to={{ pathname: "/login", state: { from: location } }}
           />
         ) : (
           <SidebarWithHeader>{children}</SidebarWithHeader>
